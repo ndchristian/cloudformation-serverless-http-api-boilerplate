@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: Boilerplate CloudFormation template for a serverless HTTP API that uses API Gateway and AWS Lambda with a custom domain name
+Parameters:
+  DomainName:
+    Type: String
+    Description: The DNS name of the website, such as example.com
+  HostedZoneId:
+    Type: String
+    Description: The ID of the Hosted Zone of the domain name
+  AcmCertificateArn:
+    Type: String
+    Description: The Amazon Resource Name (ARN) of an AWS Certificate Manager (ACM)
+      for your domain name certificate
+Resources:
+  Api:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Domain:
+        DomainName: !Ref 'DomainName'
+        CertificateArn: !Ref 'AcmCertificateArn'
+        Route53:
+          HostedZoneId: !Ref 'HostedZoneId'
+          IpV6: true
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 200
+      AccessLogSettings:
+        DestinationArn: !GetAtt 'ApiLogGroup.Arn'
+        Format: $context.requestId
+      Tags:
+        'Confidentiality': 'Public'
+  ApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 7
+Outputs:
+  ApiId:
+    Description: API ID
+    Value: !Ref 'Api'
+  ApiLogGroupArn:
+    Description: The ARN of the API log group
+    Value: !GetAtt 'ApiLogGroup.Arn'
+    
