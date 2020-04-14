@@ -33,6 +33,25 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       RetentionInDays: 7
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      InlineCode: |
+          def handler(event, context):
+              import json
+              return {
+                  "statusCode": 200,
+                  "body": json.dumps(event),
+              }
+      Handler: index.handler
+      Runtime: python3.7
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref 'Api'
+            Method: GET
+            Path: /example
 Outputs:
   ApiId:
     Description: API ID
@@ -40,4 +59,7 @@ Outputs:
   ApiLogGroupArn:
     Description: The ARN of the API log group
     Value: !GetAtt 'ApiLogGroup.Arn'
+  ApiFunctionExampleArn:
+    Description: The ARN of the example lambda function for the HTTP API
+    Value: !GetAtt 'ApiFunction.Arn'
     
