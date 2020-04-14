@@ -62,4 +62,7 @@ Outputs:
   ApiFunctionExampleArn:
     Description: The ARN of the example lambda function for the HTTP API
     Value: !GetAtt 'ApiFunction.Arn'
+  ApiDomain:
+    Description: The domain of the API
+    Value: !Ref 'DomainName'
     
